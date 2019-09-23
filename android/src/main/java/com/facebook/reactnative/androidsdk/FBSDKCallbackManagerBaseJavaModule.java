@@ -20,32 +20,22 @@
 
 package com.facebook.reactnative.androidsdk;
 
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.SimpleViewManager;
-import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.share.model.ShareContent;
-import com.facebook.share.widget.SendButton;
+import com.facebook.CallbackManager;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
-public class FBSendButtonManager extends SimpleViewManager<SendButton> {
+public abstract class FBSDKCallbackManagerBaseJavaModule extends ReactContextBaseJavaModule {
 
-    public static final String REACT_CLASS = "RCTFBSendButton";
+    private final FBActivityEventListener mActivityEventListener;
 
-    @Override
-    public String getName() {
-        return REACT_CLASS;
+    protected CallbackManager getCallbackManager()  {
+        return mActivityEventListener.getCallbackManager();
     }
 
-    @Override
-    protected SendButton createViewInstance(ThemedReactContext reactContext) {
-        return new SendButton(reactContext);
-    }
+    protected FBSDKCallbackManagerBaseJavaModule(ReactApplicationContext reactContext, FBActivityEventListener activityEventListener) {
+        super(reactContext);
 
-    @ReactProp(name = "shareContent")
-    public void setShareContent(SendButton sendButton, ReadableMap shareContentMap) {
-        ShareContent shareContent = Utility.buildShareContent(shareContentMap);
-        if (shareContent != null) {
-            sendButton.setShareContent(shareContent);
-        }
+        mActivityEventListener = activityEventListener;
+        reactContext.addActivityEventListener(mActivityEventListener);
     }
 }

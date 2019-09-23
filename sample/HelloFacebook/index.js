@@ -68,10 +68,19 @@ class HelloFacebook extends Component {
   render() {
     return (
       <View style={styles.container}>
+<<<<<<< HEAD:sample/HelloFacebook/index.js
         <LoginButton />
         <TouchableHighlight
           style={styles.share}
           onPress={this.shareLinkWithShareDialog.bind(this)}>
+=======
+        <LoginButton
+          onLoginFinished={(error, data) => {
+            Alert.alert(JSON.stringify(error || data, null, 2));
+          }}
+        />
+        <TouchableHighlight onPress={this._shareLinkWithShareDialog}>
+>>>>>>> master:example/App.js
           <Text style={styles.shareText}>Share link with ShareDialog</Text>
         </TouchableHighlight>
       </View>

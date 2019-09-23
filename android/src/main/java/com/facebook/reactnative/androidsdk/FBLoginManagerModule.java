@@ -23,7 +23,6 @@ package com.facebook.reactnative.androidsdk;
 import android.app.Activity;
 
 import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
 import com.facebook.login.DefaultAudience;
 import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginManager;
@@ -32,18 +31,21 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.Set;
 
 /**
  * This is a {@link NativeModule} that allows JS to use LoginManager of Facebook Android SDK.
  */
-public class FBLoginManagerModule extends ReactContextBaseJavaModule {
+@ReactModule(name = FBLoginManagerModule.NAME)
+public class FBLoginManagerModule extends FBSDKCallbackManagerBaseJavaModule {
+
+    public static final String NAME = "FBLoginManager";
 
     private class LoginManagerCallback extends ReactNativeFacebookSDKCallback<LoginResult> {
 
@@ -68,16 +70,13 @@ public class FBLoginManagerModule extends ReactContextBaseJavaModule {
         }
     }
 
-    private CallbackManager mCallbackManager;
-
-    public FBLoginManagerModule(ReactApplicationContext reactContext, CallbackManager callbackManager) {
-        super(reactContext);
-        mCallbackManager = callbackManager;
+    public FBLoginManagerModule(ReactApplicationContext reactContext, FBActivityEventListener activityEventListener) {
+        super(reactContext, activityEventListener);
     }
 
     @Override
     public String getName() {
-        return "FBLoginManager";
+        return NAME;
     }
 
     /**
@@ -139,7 +138,7 @@ public class FBLoginManagerModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void logInWithPermissions(ReadableArray permissions, final Promise promise) {
         final LoginManager loginManager = LoginManager.getInstance();
-        loginManager.registerCallback(mCallbackManager, new LoginManagerCallback(promise));
+        loginManager.registerCallback(getCallbackManager(), new LoginManagerCallback(promise));
         Activity activity = getCurrentActivity();
         if (activity != null) {
             loginManager.logIn(activity,
